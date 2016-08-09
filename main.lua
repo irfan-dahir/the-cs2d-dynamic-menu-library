@@ -1,4 +1,9 @@
-dofile("sys/lua/dmenu/dmenu.lua")
+--[[
+	This is just a code example script to show you what DMENU/TCDML can do. You don't need this file to run it.
+]]
+
+-- include dmenu if it's not in autorun or already included in server.lua
+-- dofile("sys/lua/dmenu/dmenu.lua")
 
 --[[
 	Hooks
