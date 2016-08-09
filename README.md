@@ -72,8 +72,7 @@ You're done setting it up! Now lets head to the functions TCDML provides!
 **Parameters** | `id` (integer, player ID), `menuName` (internal name of the menu), `itemArr` a valid TCDML menu array
 **Returns** | ***true*** or ***false***
 **Info** | This method **deepcopies** a valid TCDML menu array to a menu
-**Example** | ```
-dmenu:push(id, "Menu", {
+**Example** | ``` dmenu:push(id, "Menu", {
 	{"Button 1", "Description", function(id) 
 		dmenu:display(id, "Second Menu")
 	end, true, {id}},	
