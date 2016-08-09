@@ -45,7 +45,7 @@ You're done setting it up! Now lets head to the functions TCDML provides!
 ####dmenu:display
 **Function** | `dmenu:display(id, menuName {,page})`
 ------------ | -----------------------------------
-**Parameters** | `id` (integer, player ID), `menuName` (internal name of the menu), `page` (you know what this is)
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu), `page` (integer, you know what this is)
 **Returns** | ***brings up the menu in-game*** or ***false***
 **Info** | This function is usually added in the **serveraction** hook and as button functions to bring up other menus (such as the next page)
 **Example** | `dmenu:display(id, "Inventory")`
@@ -53,7 +53,7 @@ You're done setting it up! Now lets head to the functions TCDML provides!
 ####dmenu:add
 **Function** | `dmenu:add(id, menuName)`
 ------------ | -----------------------------------
-**Parameters** | `id` (integer, player ID), `menuName` (internal name of the menu)
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu)
 **Returns** | ***true***
 **Info** | Before utilizing a menu, you need to construct it. `menuName` becomes the internal ID of the menu and you can further on access the menu with other functions with this ID
 **Example** | `dmenu:add(id, "Inventory")` `dmenu:add(id, "main-menu")`
@@ -61,7 +61,7 @@ You're done setting it up! Now lets head to the functions TCDML provides!
 ####dmenu:remove
 **Function** | `dmenu:remove(id, menuName)`
 ------------ | -----------------------------------
-**Parameters** | `id` (integer, player ID), `menuName` (internal name of the menu)
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu)
 **Returns** | ***true*** or ***false***
 **Info** | Removes a menu.
 **Example** | `dmenu:remove(id, "Inventory")`
@@ -69,18 +69,128 @@ You're done setting it up! Now lets head to the functions TCDML provides!
 ####dmenu:push
 **Function** | `dmenu:push(id, menuName, itemArr)`
 ------------ | -----------------------------------
-**Parameters** | `id` (integer, player ID), `menuName` (internal name of the menu), `itemArr` a valid TCDML menu array
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu), `itemArr` a valid TCDML menu array
 **Returns** | ***true*** or ***false***
 **Info** | This method **deepcopies** a valid TCDML menu array to a menu
 **Example**
 ``` 
-dmenu:push(id, "Menu", {
-	{"Button 1", "Description", function(id) 
-		dmenu:display(id, "Second Menu")
+dmenu:push(id, "Inventory", {
+	{"Heal Player", "Description", function(id) 
+		dmenu:display(id, "Player List")
 	end, true, {id}},	
-	{"Button 2", nil, function() print('le function') end, true},	
-	{"Button 3", "Disabled button", function() print('le function') end, false},	
-	{"Button 4", "Description", function() print('le function') end, true},	
-	{"Button 5", "Description", function() print('le function') end, true},	
+	{"Medkit", nil, function() print('used medkit') end, true},	
+	{"HE", "Disabled button", function() print('equipped HE') end, false},	
+	{"Primary Ammo", "Description", function() print('added ammo') end, true},	
 })
 ```
+
+####dmenu:link
+**Function** | `dmenu:link(id, menuName, itemArr)`
+------------ | -----------------------------------
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu), `itemArr` a valid TCDML menu array
+**Returns** | ***true*** or ***false***
+**Info** | This method **link** a valid TCDML menu array to a menu. **If you use a local menu array in a function, it will be destroyed once the function ends so the link will become a nil value.** So use this for pre-set or global menu arrays.
+**Example**
+``` 
+dmenu:link(id, "Menu", {
+	{"Heal Player", "Description", function(id) 
+		dmenu:display(id, "Player List")
+	end, true, {id}},	
+	{"Medkit", nil, function() print('used medkit') end, true},	
+	{"HE", "Disabled button", function() print('equipped HE') end, false},	
+	{"Primary Ammo", "Description", function() print('added ammo') end, true},
+})
+```
+
+####dmenu:empty
+**Function** | `dmenu:empty(id, menuName)`
+------------ | -----------------------------------
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu)
+**Returns** | ***true*** or ***false***
+**Info** | This method will empty the items/buttons from a valid TCDML menu array
+**Example**
+``` 
+--updating the list of players
+dmenu:empty(id, "Players List")
+for _,pid in ipairs(player(0, "table")) do
+	dmenu:addButton(id, "Players List", player(pid, "name"), player(pid, "usgn"), nil, false, id)
+end
+```
+
+####dmenu:exists
+**Function** | `dmenu:exists(id, menuName)`
+------------ | -----------------------------------
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu)
+**Returns** | ***true*** or ***false***
+**Info** | Checks whether if a menu with the internal menu id `menuName` exists
+**Example**
+``` 
+if dmenu:exists(id, "Inventory") do
+	print('Inventory exists!')
+else
+	print('or does it?')
+end
+```
+
+####dmenu:addButton
+**Function** | `dmenu:addButton(id, menuName, buttonName, buttonDesc, buttonFunc, buttonState, ...)`
+------------ | -----------------------------------
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu), `buttonName` (string|nil, give it a name), `buttonDesc` (string, give the button a description, nil for no description), `buttonFunc` (function|nil), `buttonState` (boolean, enable/disable the button), `...` (whichever external variables you use in `buttonFunc` add them here to pass on the values)
+**Returns** | ***true*** or ***false***
+**Info** | Add a button to your menu!
+**Example** | `dmenu:addButton(id, "Inventory", "Secondary Ammo", "Qty:5", function(id) print(player(id, "name").."has 5 secondary ammo packs") end, id)
+
+####dmenu:removeButton
+**Function** | `dmenu:removeButton(id, menuName, offset)`
+------------ | -----------------------------------
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu), `offset` (integer, the item/button offset in the menu array)
+**Returns** | ***true*** or ***false***
+**Info** | Remove a button from your menu!
+**Example** | `dmenu:removeButton(id, "Inventory", 4)`
+
+####dmenu:editButton
+**Function** | `dmenu:editButton(id, menuName, offset, buttonName, buttonDesc, buttonFunc, buttonState, ...)`
+------------ | -----------------------------------
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu), `offset` (integer, the item/button offset in the menu array, `buttonName` (string|nil, give it a name), `buttonDesc` (string, give the button a description, nil for no description), `buttonFunc` (function|nil), `buttonState` (boolean, enable/disable the button), `...` (whichever external variables you use in `buttonFunc` add them here to pass on the values)
+**Returns** | ***true*** or ***false***
+**Info** | Edit the values of your button by offset
+**Example** | `dmenu:editButton(id, "Inventory", 4, "Secondary Ammo", "Qty:5", function(id) print(player(id, "name").."has 5 secondary ammo packs") end, id)`
+
+####dmenu:switchButton
+**Function** | `dmenu:switchButton(id, menuName, offset, state)`
+------------ | -----------------------------------
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu), `offset` (integer, the item/button offset in the menu array, `state` (boolean, enable/disable the button)
+**Returns** | ***true*** or ***false***
+**Info** | Enable/Disable the button by offset
+**Example** | `dmenu:switchButton(id, "Inventory", 4, false) --disable this button`
+
+####dmenu:getButtonPropertyByOffset
+**Function** | `dmenu:getButtonPropertyByOffset(id, menuName, offset)`
+------------ | -----------------------------------
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu), `offset` (integer, the item/button offset in the menu array
+**Returns** | ***true*** or ***false***
+**Info** | returns all button values (name, description, function, state) by offset
+**Example** | `local property = dmenu:getButtonPropertyByOffset(id, "Inventory", 4)`
+
+####dmenu:buttonExists
+**Function** | `dmenu:buttonExists(id, menuName, offset)`
+------------ | -----------------------------------
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu), `offset` (integer, the item/button offset in the menu array
+**Returns** | ***true*** or ***false***
+**Info** | Checks if a button exists by offset
+**Example**
+```
+if dmenu:buttonExists(id, "Inventory", 4) then
+	print('This button exists!')
+else
+	print('or does it?')
+end
+```
+
+####dmenu:getButtonCount
+**Function** | `dmenu:getButtonCount(id, menuName)`
+------------ | -----------------------------------
+**Parameters** | `id` (integer, player ID), `menuName` (string, internal name of the menu)
+**Returns** | ***integer***
+**Info** | Get the number of items/buttons in a menu
+**Example** | `local buttonCount = dmenu:getButtonCount(id, "Inventory")`
