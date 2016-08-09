@@ -6,16 +6,17 @@ TCDML is still stable and working as any other menu script but I plan to add mor
 
 If you want to have a quick look at how TCDML works, check out [main.lua](main.lua).
 
-###Installation
+##Installation
 Like any other LUA script for CS2D, include `dmenu.lua` to ***/sys/lua/server.lua*** or drop it in ***sys/lua/autorun/***
 
-###Rolling it out
+##Rolling it out
 You need to hook 3 functions or simply include these functions in their respective hooks.
 
 `dmenu.Construct(id)` needs to be added in the Join hook.
 
 **Recommended**
-```addhook("join", "_join")
+```
+addhook("join", "_join")
 function _join(id)
 	dmenu.Construct(id)
 end
@@ -41,10 +42,11 @@ Or `addhook("leave", "dmenu.Destruct")`
 You're done setting it up! Now lets head to the functions TCDML provides!
 
 
-###Documentation
+##Documentation
 
-#####dmenu:display
+####dmenu:display
 **Function** | `dmenu:display(id, menuName {,page})`
 ------------ | -----------------------------------
 **Parameters** | `id` (integer, player ID), `menuName` (internal name of the menu), `page` (you know what this is)
 **Return** | ***brings up the menu in-game*** or ***false***
+
