@@ -11,7 +11,19 @@ If you want to have a quick look at how TCDML works, check out [main.lua](main.l
 * Moar functions for dynamafication!
 
 ##Installation
-Like any other LUA script for CS2D, include `dmenu.lua` to ***/sys/lua/server.lua*** or drop it in ***sys/lua/autorun/***
+Like any other LUA script for CS2D, include **dmenu.lua** to ***/sys/lua/server.lua*** or drop it in ***sys/lua/autorun/***
+
+##Configuration
+The only configuration in here is logging. Open **dmenu.lua** and check out lines 9-11 (seriously).
+```
+dmenu.log = true
+dmenu.debug = true
+dmenu.error = true
+```
+`dmenu.log` will switch the whole log process on/off. Logs are done by using print() and the log text can be found in your server console or your cs2d log files.
+`dmenu.debug` will/will not log debug messages
+`dmenu.error` will/will not log error messages
+if `dmenu.log` is false then neither will it log debug or error messages!
 
 ##Rolling it out
 You need to hook 3 functions or simply include these functions in their respective hooks.
