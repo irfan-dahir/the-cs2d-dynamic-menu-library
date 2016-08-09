@@ -6,6 +6,10 @@ TCDML is still stable and working as any other menu script but I plan to add mor
 
 If you want to have a quick look at how TCDML works, check out [main.lua](main.lua).
 
+###To Do
+* Return button offset(s) by button name
+* Moar functions for dynamafication!
+
 ##Installation
 Like any other LUA script for CS2D, include `dmenu.lua` to ***/sys/lua/server.lua*** or drop it in ***sys/lua/autorun/***
 
