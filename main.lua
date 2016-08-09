@@ -17,7 +17,7 @@ addhook("serveraction", "_svaction")
 function _join(id)
 	-- this must be added in the join/team hook
 	dmenu.Construct(id)
-	-- the rest here can be added anywhere
+	-- the rest of the code in this hook can be added anywhere!
 	dmenu:add(id, "Menu")
 	dmenu:add(id, "Second Menu")
 	dmenu:add(id, "Third Menu")
@@ -87,7 +87,7 @@ function _leave(id)
 end
 
 function _svaction(id, action)
-	if action == 1 then
+	if action == 1 then --if someone presses F2
 		dmenu:display(id, "Menu")
 	end
 end
