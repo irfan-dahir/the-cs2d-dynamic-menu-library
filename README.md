@@ -12,7 +12,7 @@ Like any other LUA script for CS2D, include `dmenu.lua` to `/sys/lua/server.lua`
 ###Rolling it out
 You need to hook 3 functions or simply include these functions in their respective hooks.
 `dmenu.Construct(id)` needs to be added in the Join hook.
-````--recommended method
+```--recommended method
 addhook("join", "_join")
 function _join(id)
 	dmenu.Construct(id)
@@ -20,9 +20,9 @@ end
 
 --or
 addhook("join", "dmenu.Construct")
-````
+```
 `dmenu.Destruct(id)` needs to be added in the Leave hook.
-````--recommended method
+```--recommended method
 addhook("leave", "_leav")
 function _leave(id)
 	dmenu.Destruct(id)
@@ -30,11 +30,11 @@ end
 
 --or
 addhook("leave", "dmenu.Destruct")
-````
+```
 `dmenu.Hook` can directly be added as a hook function.
-````--recommended method
+```--recommended method
 addook("menu", "dmenu.Hook")
-````
+```
 
 You're done setting it up! Now lets head to the functions TCDML provides!
 
