@@ -36,6 +36,20 @@ function _join(id)
 		{"Button 4", "Description", function() print('le function') end, true},	
 		{"Button 5", "Description", function() print('le function') end, true},	
 	})
+	--[[
+		NOTE: You can't do the same thing with dmenu:link as you did here where the button array is locally made and then pushed into "Menu" 
+		It has to be a global array, hence:
+		a_valid_global_tcdml_array = {
+			{"Button 1", "Description", function(id) 
+				dmenu:display(id, "Second Menu")
+			end, true, {id}},	
+			{"Button 2", nil, function() print('le function') end, true},	
+			{"Button 3", "Disabled button", function() print('le function') end, false},	
+			{"Button 4", "Description", function() print('le function') end, true},	
+			{"Button 5", "Description", function() print('le function') end, true},	
+		}
+		dmenu:link(id, "Menu", a_valid_global_tcdml_array)
+	]]
 
 	--Now let us use :addButton which does the same thing but makes it easier for you
 	--We shall add some buttons into our Second Menu

@@ -1,38 +1,14 @@
 if dmenu == nil then dmenu = {} end
 dmenu.author = "Nighthawk"
 dmenu.authorUSGN = 116310
-dmenu.version = "1.3.0.0"
+dmenu.version = 0.2
 
 --[[
-	Configuration
+	Logging
 ]]
-dmenu.config = {
-
-	log = {
-		enabled = true,
-		debug = {
-			enabled = true,
-			color = "\169050120255",
-		},
-		error = {
-			enabled = true,
-			color = "\169255080090",
-		},
-	},
-
-	page = {
-		-- WARNING: Only use 1 character
-		prefix = "[",
-		suffix = "]",
-	},
-
-	pagination = {
-		enabled = true,
-		nextButtonText = "Next",
-		previousButtonText = "Back",
-	},
-
-}
+dmenu.log = true
+dmenu.debug = true
+dmenu.error = true
 
 --[[
 	Initialization
@@ -49,7 +25,7 @@ dmenu.pageString = dmenu.initArray(32)
 function dmenu.Construct(id) --addhook("join", "dmenu.Construct")
 	dmenu.object[id] = {}
 	dmenu.pageString[id] = {}
-	dmenu:log("debug", "[#"..id.."] dmenu object constructed")
+	dmenu:log("debug", "[#"..id.."] constructed")
 	return true
 end
 
@@ -58,7 +34,7 @@ function dmenu.Destruct(id) --addhook("leave", "dmenu.Destruct")
 	dmenu.pageString[id] = nil
 	dmenu.object[id] = 0
 	dmenu.pageString[id] = 0
-	dmenu:log("debug", "[#"..id.."] dmenu object destructed")
+	dmenu:log("debug", "[#"..id.."] destructed")
 	return true
 end
 
@@ -99,7 +75,7 @@ function dmenu:display(id, menuName, page)
 		dmenu.pageString[id][menuName] = {}
 		for i=1, pages do
 			--local page_string = i.." - "..dmenu.object[id][menuName].title..","
-			local page_string = dmenu.config.page.prefix..i..dmenu.config.page.suffix.." "..dmenu.object[id][menuName].title..","
+			local page_string = "["..i.."] "..dmenu.object[id][menuName].title..","
 			for ii=1, 7 do
 				local iii = ii+(7*(i-1))
 				local button = ""
@@ -120,10 +96,8 @@ function dmenu:display(id, menuName, page)
 					page_string = page_string..","
 				end
 			end
-			if dmenu.config.pagination.enabled then
-				if i < pages then page_string = page_string..dmenu.config.pagination.nextButtonText end
-				if i > 1 then page_string = page_string..","..dmenu.config.pagination.nextButtonText end
-			end
+			if i < pages then page_string = page_string.."Next" end
+			if i > 1 then page_string = page_string..",Back" end
 			dmenu.pageString[id][menuName][i] = page_string
 		end
 		menu(id, dmenu.pageString[id][menuName][page])
@@ -206,40 +180,11 @@ function dmenu:empty(id, menuName)
 	return false
 end
 
-function dmenu:isEmpty(id, menuName)
-	if dmenu:exists(id, menuName) then
-		if #dmenu.object[id][menuName].items == 0 then
-			dmenu:log("debug", "[#"..id.."] \""..menuName.."\" is empty")
-			return true
-		end 
-		dmenu:log("debug", "[#"..id.."] \""..menuName.."\" is NOT empty")
-		return false
-	else
-		dmenu:log("error", "[#"..id.."] \""..menuName.."\" does not exist")
-	end
-	return false
-end
-
-function dmenu:getPlayerMenuCount(id)
-	if dmenu:playerMenuObjectExists(id) then
-		dmenu:log("debug", "[#"..id.."] player menu object exists")
-		return #dmenu.object[id]
-	else
-		dmenu:log("error", "[#"..id.."] player menu object does not exists")
-	end
-	return false
-end
-
 function dmenu:exists(id, menuName)
 	if dmenu.object[id][menuName] ~= nil and type(dmenu.object[id][menuName]) == "table" then
-		dmenu:log("debug", "[#"..id.."] player menu object exists")
 		return true
 	end
 	return false
-end
-
-function dmenu:playerMenuObjectExists(id)
-	if dmenu.object[id] ~= 0 then return true end return false
 end
 
 function dmenu:addButton(id, menuName, buttonName, buttonDesc, buttonFunc, buttonState, ...)
@@ -288,54 +233,10 @@ function dmenu:editButton(id, menuName, offset, buttonName, buttonDesc, buttonFu
 	return false
 end
 
-
-function dmenu:setButtonName(id, menuName, offset, buttonName)
-	if dmenu:exists(id, menuName) then
-		if dmenu:buttonExists(id, menuName, offset) then
-			dmenu.object[id][menuName].items[offset][1] = buttonName
-			return true
-		else
-			dmenu:log("error", "[#"..id.."] button at offset "..offset.." does not exist in \""..menuName.."\"")
-		end
-	else
-		dmenu:log("error", "[#"..id.."] \""..menuName.."\" does not exist")
-	end
-	return false
-end
-
-function dmenu:setButtonDescription(id, menuName, offset, buttonDesc)
-	if dmenu:exists(id, menuName) then
-		if dmenu:buttonExists(id, menuName, offset) then
-			dmenu.object[id][menuName].items[offset][2] = buttonDesc
-			return true
-		else
-			dmenu:log("error", "[#"..id.."] button at offset "..offset.." does not exist in \""..menuName.."\"")
-		end
-	else
-		dmenu:log("error", "[#"..id.."] \""..menuName.."\" does not exist")
-	end
-	return false
-end
-
-function dmenu:setButtonState(id, menuName, offset, state)
+function dmenu:switchButton(id, menuName, offset, state)
 	if dmenu:exists(id, menuName) then
 		if dmenu:buttonExists(id, menuName, offset) then
 			dmenu.object[id][menuName].items[offset][4] = state
-			return true
-		else
-			dmenu:log("error", "[#"..id.."] button at offset "..offset.." does not exist in \""..menuName.."\"")
-		end
-	else
-		dmenu:log("error", "[#"..id.."] \""..menuName.."\" does not exist")
-	end
-	return false
-end
-
-function dmenu:setButtonFunction(id, menuName, offset, buttonFunc, ...)
-	if dmenu:exists(id, menuName) then
-		if dmenu:buttonExists(id, menuName, offset) then
-			dmenu.object[id][menuName].items[offset][4] = buttonFunc
-			dmenu.object[id][menuName].items[offset][5] = {...}
 			return true
 		else
 			dmenu:log("error", "[#"..id.."] button at offset "..offset.." does not exist in \""..menuName.."\"")
@@ -353,22 +254,6 @@ function dmenu:getButtonPropertyByOffset(id, menuName, offset)
 		else
 			dmenu:log("error", "[#"..id.."] button at offset "..offset.." does not exist in \""..menuName.."\"")
 		end
-	else
-		dmenu:log("error", "[#"..id.."] \""..menuName.."\" does not exist")
-	end
-	return false
-end
-
---	NOTE: WILL RETURN ARRAY IF MORE THAN 1 BUTTON HAS THE NAME YOU'RE SEARCHING FOR
-function dmenu:getButtonPropertyByButtonNameMatch(id, menuName, buttonNameMatch)
-	if dmenu:exists(id, menuName) then
-		local arr = {}
-		for k,v in pairs(dmenu.object[id][menuName].items) do
-			if string.match(v[1], buttonNameMatch) then
-				table.insert(arr, k)
-			end
-		end
-		if #arr > 1 then return arr else return arr[1] end
 	else
 		dmenu:log("error", "[#"..id.."] \""..menuName.."\" does not exist")
 	end
@@ -395,11 +280,6 @@ function dmenu:getButtonCount(id, menuName)
 	return false
 end
 
-
---[[
-	Private Methods
-]]
-
 function dmenu:callFunc(id, menuName, offset)
 	if dmenu.object[id][menuName].items[offset][3] ~= nil and type(dmenu.object[id][menuName].items[offset][3]) == "function" then
 		dmenu.object[id][menuName].items[offset][3](unpack(dmenu.object[id][menuName].items[offset][5]))
@@ -407,15 +287,15 @@ function dmenu:callFunc(id, menuName, offset)
 end
 
 function dmenu:log(logType, text) -- <private function> logs eror/debug stuff
-	if dmenu.config.log.enabled then
+	if dmenu.log then
 		local __callerFunc = debug.getinfo(2).name or "unknown"
 		if logType == "debug" then
-			if dmenu.config.log.debug.enabled then
-				print(dmenu.config.log.debug.color.."["..logType.."]["..__callerFunc.."]"..text)
+			if dmenu.debug then
+				print("["..logType.."]["..__callerFunc.."]"..text)
 			end
 		elseif logType == "error" then
-			if dmenu.config.log.error.enabled then
-				print(dmenu.config.log.error.color.."["..logType.."]["..__callerFunc.."]"..text)
+			if dmenu.error then
+				print("["..logType.."]["..__callerFunc.."]"..text)
 			end
 		end
 	end
